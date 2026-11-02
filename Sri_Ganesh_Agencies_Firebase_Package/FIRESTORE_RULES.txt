@@ -1,0 +1,26 @@
+Paste these rules in Firebase Console > Firestore Database > Rules, after confirming these are the two intended admin email addresses.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'sukeshganesh1011@gmail.com',
+          'ganeshsukesh@gmail.com'
+        ];
+    }
+
+    match /brands/{brandId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
+
+Security note: This permits public read-only access to brands/products and write access only to the two listed signed-in email accounts. Consider requiring verified email by adding `&& request.auth.token.email_verified == true` to isAdmin() after verifying both accounts' email addresses.

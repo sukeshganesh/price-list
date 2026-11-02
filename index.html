@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wholesale Price List</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#14202e;--mut:#64748b;--bd:#dde4ee;--ac:#2563eb;--ac2:#0ea5e9;--soft:#e8f0fe;--ok:#15803d;--bad:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e141c;--card:#17202b;--tx:#e8edf3;--mut:#93a1b3;--bd:#27333f;--soft:#1b2a44;--ok:#4ade80}}
+:root[data-theme="dark"]{--bg:#0e141c;--card:#17202b;--tx:#e8edf3;--mut:#93a1b3;--bd:#27333f;--soft:#1b2a44;--ok:#4ade80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:14px}
+.hero{background:linear-gradient(120deg,var(--ac),var(--ac2));color:#fff;border-radius:16px;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;animation:drop .5s ease both}
+.hero h1{margin:0;font-size:22px}.hero p{margin:2px 0 0;opacity:.9;font-size:14px}
+.pill{font-size:13px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);display:inline-flex;align-items:center;gap:7px}
+.pill.live::before{content:"";width:9px;height:9px;border-radius:50%;background:#4ade80;animation:pulse 1.6s infinite}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.stats div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;animation:rise .5s ease both}
+.stats b{display:block;font-size:20px;color:var(--ac)}.stats span{font-size:13px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;animation:rise .5s ease both}
+button{font:inherit;min-height:46px;padding:0 18px;border-radius:10px;border:0;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s}
+button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.3)}button:active{transform:scale(.96)}
+button.big{width:100%;font-size:17px;min-height:52px;margin-bottom:12px}
+button.ghost{background:transparent;color:var(--tx);border:1px solid var(--bd);box-shadow:none}
+button.del{background:transparent;color:var(--bad);border:1px solid var(--bd);box-shadow:none}
+label{display:block;font-size:13px;font-weight:600;color:var(--mut);margin:0 0 4px}
+input,select{font:inherit;width:100%;min-height:46px;padding:0 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);transition:box-shadow .2s,border-color .2s}
+input:focus,select:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px rgba(37,99,235,.2)}
+.forms{display:grid;grid-template-columns:1fr 2fr;gap:16px}
+.forms h3{margin:0 0 10px;font-size:16px}
+.f{margin-bottom:10px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;-webkit-overflow-scrolling:touch}
+.chip{flex:none;min-height:38px;padding:0 16px;border-radius:99px;background:transparent;color:var(--tx);border:1px solid var(--bd);box-shadow:none;font-weight:500}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.item{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px;transition:transform .2s,box-shadow .2s}
+.item:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.item.rin{animation:rise .45s ease both}.item.flash{animation:flash 1.8s ease}
+.tag{align-self:flex-start;background:var(--soft);color:var(--ac);font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px}
+.item h3{margin:4px 0 0;font-size:18px}
+.price{font-size:28px;font-weight:800;color:var(--ac);margin-top:4px}
+.sm{font-size:13px;color:var(--mut)}
+.acts{display:flex;gap:8px;margin-top:10px}.acts button{flex:1}
+.up{color:var(--bad);font-size:16px}.dn{color:var(--ok);font-size:16px}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.mb{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.mb[hidden]{display:none}.mb button{min-height:40px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#14202e;color:#fff;padding:12px 20px;border-radius:99px;opacity:0;pointer-events:none;transition:all .3s;z-index:20;max-width:90%}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes drop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes flash{0%,30%{background:rgba(250,204,21,.45)}100%{background:var(--card)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.7)}70%,100%{box-shadow:0 0 0 8px rgba(74,222,128,0)}}
+@media (max-width:700px){.forms{grid-template-columns:1fr}.hero h1{font-size:20px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div><h1>📦 Wholesale Price List</h1><p id="sub">Prices update live on every device</p></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="st" class="pill">Connecting…</span><button id="loginBtn" class="ghost" style="background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.55);min-height:38px;padding:0 12px">Admin login</button></div>
+</div>
+<div id="loginPanel" class="card" hidden>
+  <h3 style="margin:0 0 10px">Admin login</h3>
+  <p class="sm">Only the administrator can add, edit or delete prices.</p>
+  <div class="two">
+    <div class="f"><label for="adminEmail">Admin email</label><input id="adminEmail" type="email" autocomplete="username" placeholder="Enter admin email"></div>
+    <div class="f"><label for="adminPassword">Password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter password"></div>
+  </div>
+  <div class="acts"><button id="signInBtn">Login</button><button id="closeLogin" class="ghost">Cancel</button></div>
+  <p id="loginError" class="sm" role="alert"></p>
+</div>
+<div class="stats">
+  <div><b id="sB">0</b><span>Brands</span></div>
+  <div><b id="sP">0</b><span>Products</span></div>
+  <div><b id="sU">–</b><span>Last update</span></div>
+</div>
+
+<div id="mainbar" class="card mb" hidden><span id="mtxt"></span><button id="mkMain" hidden>👑 Make me Main</button></div>
+<div id="edit" hidden>
+  <button id="toggle" class="big">＋ Add brand or product</button>
+  <div id="panel" class="card" hidden>
+    <div class="forms">
+      <div>
+        <h3>① New brand</h3>
+        <div class="f"><label for="bn">Brand name</label><input id="bn" placeholder="e.g. Parle"></div>
+        <button id="addB" style="width:100%">Save brand</button>
+      </div>
+      <div>
+        <h3>② New product</h3>
+        <div class="two">
+          <div class="f"><label for="pb">Brand</label><select id="pb"></select></div>
+          <div class="f"><label for="pn">Product name</label><input id="pn" placeholder="e.g. Parle-G Biscuit"></div>
+          <div class="f"><label for="pu">Unit</label><input id="pu" list="units" placeholder="kg, box, dozen…"></div>
+          <div class="f"><label for="pp">Price (₹)</label><input id="pp" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00"></div>
+        </div>
+        <button id="addP" style="width:100%">Save product</button>
+      </div>
+    </div>
+  </div>
+</div>
+<datalist id="units"><option value="kg"><option value="g"><option value="litre"><option value="ml"><option value="piece"><option value="dozen"><option value="packet"><option value="box"><option value="carton"><option value="bag"></datalist>
+
+<div class="card" style="padding:12px">
+  <input id="q" type="search" placeholder="🔍 Search product or brand">
+  <div class="chips" id="chips"></div>
+</div>
+<div id="grid" class="grid"></div>
+<div id="empty" class="empty" hidden></div>
+</div>
+<div id="toast" role="status"></div>
+
+<!-- Firebase compat SDKs: database + secure admin authentication -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// 1) Replace these values with the Firebase web-app config from your Firebase project.
+const firebaseConfig = {
+  apiKey: "AIzaSyDXpBown2kPHiNC5UOzIGI0CvssLZ9LY",
+  authDomain: "sri-ganesh-agencies-kallal.firebaseapp.com",
+  projectId: "sri-ganesh-agencies-kallal",
+  storageBucket: "sri-ganesh-agencies-kallal.firebasestorage.app",
+  messagingSenderId: "867980957574",
+  appId: "1:867980957574:web:8b036df88431c4ec32fe07",
+  measurementId: "G-697VBT3GFE"
+};
+// 2) Add BOTH admin email addresses here (your email and your dad's email).
+// Use the same addresses you register in Firebase Authentication.
+// Firestore Security Rules below must contain the same two email addresses.
+const ADMIN_EMAILS = [
+  "sukeshganesh1011@gmail.com",
+  "ganeshsukesh@gmail.com"
+].map(email => email.trim().toLowerCase());
+const isAdmin = user => !!user && !!user.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+
+let app, auth, db, brands=[], products=[], filter="all", canEdit=false, editing=null, loaded=0, lastOpts="", want=null;
+const seen=new Map();
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>"₹"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
+function ago(t){if(!t)return"";const d=(Date.now()-t)/1000;if(d<60)return"just now";if(d<3600)return Math.floor(d/60)+" min ago";if(d<86400)return Math.floor(d/3600)+" h ago";return new Date(t).toLocaleDateString("en-IN")}
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2400)}
+function stats(){ $("sB").textContent=brands.length;$("sP").textContent=products.length;const m=Math.max(0,...products.map(p=>p.updatedAt||0));$("sU").textContent=m?ago(m):"–" }
+function status(user){canEdit=isAdmin(user);const s=$("st");s.className="pill live";s.textContent=canEdit?"Live · Admin editing":"Live · View only";$("loginBtn").textContent=canEdit?"Admin logout":"Admin login";$("edit").hidden=!canEdit;}
+function render(){stats();const sb=brands.slice().sort((a,b)=>a.name.localeCompare(b.name));const bm=Object.fromEntries(sb.map(b=>[b.id,b.name]));const opts=sb.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join("")||'<option value="">Save a brand first</option>';if(opts!==lastOpts){const cur=$("pb").value;$("pb").innerHTML=opts;lastOpts=opts;if(cur)$("pb").value=cur}if(want){$("pb").value=want;want=null}
+$("chips").innerHTML=`<button class="chip ${filter==="all"?"on":""}" data-f="all">All</button>`+sb.map(b=>`<button class="chip ${filter===b.id?"on":""}" data-f="${b.id}">${esc(b.name)}</button>`).join("");const q=$("q").value.toLowerCase().trim();const list=products.filter(p=>(filter==="all"||p.brandId===filter)&&(!q||(p.name+" "+(bm[p.brandId]||"")).toLowerCase().includes(q))).sort((a,b)=>(bm[a.brandId]||"").localeCompare(bm[b.brandId]||"")||a.name.localeCompare(b.name));
+$("grid").innerHTML=list.map((p,i)=>{const cls=!seen.has(p.id)?"rin":seen.get(p.id)!==p.price?"flash":"";seen.set(p.id,p.price);const sty=cls==="rin"?` style="animation-delay:${Math.min(i,12)*40}ms"`:"";const tag=`<span class="tag">${esc(bm[p.brandId]||"No brand")}</span>`;if(editing===p.id&&canEdit)return `<article class="item"><div class="f"><label>Product name</label><input id="en" value="${esc(p.name)}"></div><div class="two"><div class="f"><label>Unit</label><input id="eu" list="units" value="${esc(p.unit)}"></div><div class="f"><label>Price (₹)</label><input id="ep" type="number" inputmode="decimal" min="0" step="any" value="${Number(p.price)}"></div></div><div class="acts"><button data-s="${p.id}">Save</button><button class="ghost" data-c="1">Cancel</button></div></article>`;const ch=p.prev!=null&&p.prev!==p.price?` <span class="${p.price>p.prev?"up":"dn"}">${p.price>p.prev?"▲":"▼"} was ${fmt(p.prev)}</span>`:"";const acts=canEdit?`<div class="acts"><button class="ghost" data-e="${p.id}">✏️ Edit</button><button class="del" data-d="${p.id}">🗑 Delete</button></div>`:"";return `<article class="item ${cls}"${sty}>${tag}<h3>${esc(p.name)}</h3><div class="sm">per ${esc(p.unit)}</div><div class="price">${fmt(p.price)}</div><div class="sm">${ch} Updated ${ago(p.updatedAt)}</div>${acts}</article>`}).join("");const em=$("empty");if(loaded<2){em.hidden=false;em.textContent="Loading prices…"}else if(!list.length){em.hidden=false;em.textContent=products.length?"Nothing matches your search.":(canEdit?"No products yet. Tap “＋ Add brand or product” above to start.":"No prices added yet. Please check back soon.")}else em.hidden=true;$("edit").hidden=!canEdit;const ei=$("en");if(ei)ei.focus();}
+function endEdit(){editing=null;render()}
+async function saveEdit(id){const p=products.find(x=>x.id===id);if(!p)return endEdit();const name=$("en").value.trim(),unit=$("eu").value.trim(),price=parseFloat($("ep").value);if(!name||!unit||isNaN(price)||price<0){toast("Please fill name, unit and a valid price");return}if(name===p.name&&unit===p.unit&&price===p.price)return endEdit();try{await db.collection("products").doc(id).update({name,unit,price,prev:price!==p.price?p.price:(p.prev??null),updatedAt:Date.now()});toast("Saved ✓")}catch(e){toast("Could not save: "+(e.message||e.code));return}endEdit()}
+document.addEventListener("click",async e=>{const t=e.target.closest("button");if(!t)return;const d=t.dataset;if(d.f){filter=d.f;if(!editing)render();return}if(!db||!canEdit)return;if(d.e){editing=d.e;render()}else if(d.c)endEdit();else if(d.s)saveEdit(d.s);else if(d.d){const p=products.find(x=>x.id===d.d);if(p&&confirm("Delete “"+p.name+"”?")){try{await db.collection("products").doc(p.id).delete();toast("Deleted")}catch(er){toast("Could not delete: "+(er.message||er.code))}}}});
+document.addEventListener("keydown",e=>{if(!editing)return;if(e.key==="Enter"&&["en","eu","ep"].includes(e.target.id))saveEdit(editing);if(e.key==="Escape")endEdit()});$("q").addEventListener("input",()=>{if(!editing)render()});
+$("toggle").onclick=()=>{const p=$("panel");p.hidden=!p.hidden;$("toggle").textContent=p.hidden?"＋ Add brand or product":"✕ Close";if(!p.hidden)$("bn").focus()};
+$("addB").onclick=async()=>{const n=$("bn").value.trim();if(!n||!db||!canEdit){toast("Admin login required");return}if(brands.some(b=>b.name.toLowerCase()===n.toLowerCase())){toast("That brand already exists");return}try{const r=await db.collection("brands").add({name:n,createdAt:Date.now()});want=r.id;$("bn").value="";toast("Brand saved ✓");$("pn").focus()}catch(e){toast("Could not save: "+(e.message||e.code))}};
+$("addP").onclick=async()=>{const b=$("pb").value,n=$("pn").value.trim(),u=$("pu").value.trim(),p=parseFloat($("pp").value);if(!canEdit){toast("Admin login required");return}if(!b){toast("Save a brand first");return}if(!n||!u||isNaN(p)||p<0){toast("Please fill product name, unit and price");return}try{await db.collection("products").add({brandId:b,name:n,unit:u,price:p,prev:null,updatedAt:Date.now()});$("pn").value=$("pp").value="";toast("Product saved ✓");$("pn").focus()}catch(e){toast("Could not save: "+(e.message||e.code))}};
+for(const id of ["bn"])$(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("addB").click()});for(const id of ["pn","pu","pp"])$(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("addP").click()});
+$("loginBtn").onclick=async()=>{if(auth.currentUser){if(isAdmin(auth.currentUser)){await auth.signOut();toast("Logged out")}else toast("This account is not an authorized editor");return}$("loginPanel").hidden=!$("loginPanel").hidden};$("closeLogin").onclick=()=>{$("loginPanel").hidden=true};$("signInBtn").onclick=async()=>{$("loginError").textContent="";try{const email=$("adminEmail").value.trim(),password=$("adminPassword").value;if(!email||!password)throw new Error("Enter the admin email and password.");const cred=await auth.signInWithEmailAndPassword(email,password);if(!isAdmin(cred.user)){await auth.signOut();throw new Error("This account is not an authorized editor. Use one of the two configured admin email addresses.")}$("loginPanel").hidden=true;$("adminPassword").value="";toast("Admin login successful ✓")}catch(e){$("loginError").textContent=e.message||"Login failed"}};
+async function init(){render();try{const missing=Object.values(firebaseConfig).some(v=>String(v).startsWith("PASTE_"))||ADMIN_EMAILS.some(email=>email.includes("example.com"));if(missing){$("st").textContent="Firebase setup required";$("empty").hidden=false;$("empty").textContent="Website files are published, but Firebase setup is not complete yet.";return}app=firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(user=>{status(user);render()});db.collection("brands").onSnapshot(s=>{brands=s.docs.map(d=>({id:d.id,...d.data()}));loaded=Math.max(loaded+1,1);render()},e=>{$("st").textContent="Database connection error";toast(e.message)});db.collection("products").onSnapshot(s=>{products=s.docs.map(d=>({id:d.id,...d.data()}));loaded=Math.max(loaded+1,1);render()},e=>{$("st").textContent="Database connection error";toast(e.message)});}catch(e){$("st").textContent="Setup error";toast(e.message)}}init();
+</script>
+</body>
+</html>
